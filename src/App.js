@@ -1,26 +1,48 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { Switch,Route } from 'react-router-dom';
+import HomePage from "./pages/homepage/home-page.component";
+import Shop from "./pages/shop/shop.component";
+import Header from "./components/header/header.component";
+import SignInAndSignUpPage from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
+import { auth } from "./firebase/firebase.utils";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+    constructor() {
+        super();
+
+        this.state = {
+            currentUser: null
+        }
+    }
+
+    unsubscribeFromAuth = null;
+    componentDidMount() {
+       this.unsubscribeFromAuth =  auth.onAuthStateChanged(user => {
+            this.setState({currentUser: user});
+            console.log(user)
+        })
+    }
+    componentWillUnmount() {
+        this.unsubscribeFromAuth();
+    }
+
+
+
+    render() {
+      return (
+          <div className="App">
+              <Header />
+              <Switch>
+                  <Route exact path='/' component={HomePage} />
+                  <Route path='/shop' component={Shop} />
+                  <Route path='/signin' component={SignInAndSignUpPage} />
+              </Switch>
+          </div>
+      );
+  }
+
+
 }
 
 export default App;
